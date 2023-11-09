@@ -1,15 +1,17 @@
 import torch
 import torch.nn as nn
+from typing import List, Dict, Tuple, Optional
 
 # custom VAE implementation
 class VAE_encoder(nn.Module):
-    def __init__(self,input_dim, 
-                 hidden_dims, 
-                 latent_dim, 
-                 hidden_activation, 
-                 output_mu_activation,
-                 output_logvar_activation):
-        super(VAE_encoder, self).__init__()
+    def __init__(self,input_dim:int, 
+                 hidden_dims:List[int], 
+                 latent_dim:int, 
+                 hidden_activation:torch.nn, 
+                 output_mu_activation:torch.nn,
+                 output_logvar_activation:torch.nn):
+        
+        super().__init__()
 
         layers=[]
         for h_dim in hidden_dims:
@@ -17,7 +19,7 @@ class VAE_encoder(nn.Module):
             layers.append(hidden_activation)
             # update input_dim for next layer
             input_dim = h_dim
-
+        
         self.layers = nn.Sequential(*layers)
 
         self.output_mu = nn.Sequential(
@@ -30,21 +32,21 @@ class VAE_encoder(nn.Module):
             output_logvar_activation
         )
     
-    def forward(self, x):
-        x = self.layers(x)
-        mu = self.output_mu(x)
-        logvar = self.output_logvar(x)
+    def forward(self, x ):
+        x = self.layers(x) 
+        mu = self.output_mu(x) # size [Batch size x latent_dim]
+        logvar = self.output_logvar(x) # size [Batch size x latent_dim]
         return mu, logvar
         
         
 class VAE_decoder(nn.Module):
-    def __init__(self,input_dim, 
-                 hidden_dims, 
-                 output_dim, 
-                 hidden_activation, 
-                 output_mu_activation,
-                 output_logvar_activation):
-        super(VAE_decoder, self).__init__()
+    def __init__(self,input_dim:int, 
+                 hidden_dims:List[int], 
+                 output_dim:int, 
+                 hidden_activation:torch.nn, 
+                 output_mu_activation:torch.nn,
+                 output_logvar_activation:torch.nn):
+        super().__init__()
 
         layers=[]
         for h_dim in hidden_dims:
@@ -67,21 +69,21 @@ class VAE_decoder(nn.Module):
     
     def forward(self, z):
         z = self.layers(z)
-        mu = self.output_mu(z)
-        logvar = self.output_logvar(z)
+        mu = self.output_mu(z) # size [Batch size x output_dim]
+        logvar = self.output_logvar(z) # size [Batch size x output_dim]
         return mu, logvar
         
 
 class VAE(nn.Module):
-    def __init__(self, input_dim, 
-                 hidden_dims, 
-                 latent_dim, 
-                 hidden_activation, 
-                 encoder_output_mu_activation,
-                 encoder_output_logvar_activation,
-                 decoder_output_mu_activation,
-                 decoder_output_logvar_activation):
-        super(VAE, self).__init__()
+    def __init__(self, input_dim:int, 
+                 hidden_dims:List[int], 
+                 latent_dim:int, 
+                 hidden_activation:torch.nn, 
+                 encoder_output_mu_activation:torch.nn,
+                 encoder_output_logvar_activation:torch.nn,
+                 decoder_output_mu_activation:torch.nn,
+                 decoder_output_logvar_activation:torch.nn):
+        super().__init__()
 
         self.encoder = VAE_encoder(input_dim, 
                                    hidden_dims, 
@@ -91,7 +93,7 @@ class VAE(nn.Module):
                                    encoder_output_logvar_activation)
         
         self.decoder = VAE_decoder(latent_dim, 
-                                   hidden_dims[::-1],  # reverse hidden dims
+                                   hidden_dims[::-1],  # reverse hidden dims (case where the encoder & decoder are symetric)
                                    input_dim, 
                                    hidden_activation, 
                                    decoder_output_mu_activation,
@@ -109,7 +111,7 @@ class VAE(nn.Module):
     @staticmethod
     def reparametrization_trick(mu, log_var):
         epsilon = torch.randn_like(mu)  # the Gaussian random noise with shape of mu
-        # as we are working with 2log_sigma, in order to have sigma with need to do
+        # as we are working with log(sigma^2)=2log(sigma), in order to have sigma with need to do
         # e^(0.5*ln(sigma^2)) which is equal to sigma
         return mu + torch.exp(0.5 * log_var) * epsilon
     
@@ -123,8 +125,8 @@ class VAE(nn.Module):
 
 # Computes the objective function of the VAE
 def VAE_loss(x, mu_x, log_var_x, mu_z, log_var_z, r=1.0):
-    D = mu_x.shape[1]
-    d = mu_z.shape[1]
+    D = mu_x.shape[1] # input space dimension
+    d = mu_z.shape[1] # latent space dimension 
 
     # P(X|Z) - The Probabilistic Decoder: 
     # This term represents the likelihood of observing X given the latent variable Z
