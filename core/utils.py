@@ -1,4 +1,4 @@
-# comes from https://github.com/georgiosarvanitidis/geometric_ml
+# partially comes from https://github.com/georgiosarvanitidis/geometric_ml
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,6 +16,31 @@ def pairwise_dist2_torch(x, y):
     dist = torch.pow(x - y, 2).sum(2)
     return dist
 
+
+def plot_latent_space(latent_means,labels):
+    # Set up the plot
+    fig = plt.figure(figsize=(8, 6))
+
+    # Check the number of dimensions in latent_means to determine 2D or 3D plot
+    if latent_means.shape[1] == 2:
+        ax = fig.add_subplot(111)  # 2D scatter plot
+        for label in np.unique(labels):
+            points = latent_means[labels == label]
+            ax.scatter(points[:, 0], points[:, 1], s=20, label=f'Label {label}')
+        ax.set_xlabel('Latent Variable 1')
+        ax.set_ylabel('Latent Variable 2')
+    elif latent_means.shape[1] == 3:
+        ax = fig.add_subplot(111, projection='3d')  # 3D scatter plot
+        for label in np.unique(labels):
+            points = latent_means[labels == label]
+            ax.scatter(points[:, 0], points[:, 1], points[:, 2], s=20, label=f'Label {label}')
+        ax.set_xlabel('Latent Variable 1')
+        ax.set_ylabel('Latent Variable 2')
+        ax.set_zlabel('Latent Variable 3')
+
+    ax.set_title('Latent Space of the VAE')
+    plt.legend()
+    plt.show()
 
 
 # Plots easily data in 2d or 3d
