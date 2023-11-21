@@ -155,3 +155,19 @@ def VAE_loss(x, mu_x, log_var_x, mu_z, log_var_z, r=1.0):
     # space regularization during training)
 
     return P_X_Z + r * Q_Z_X + r * P_Z
+
+def VAE_loss_2(x, mu_x, log_var_x, mu_z, log_var_z, l=2):
+    D = mu_x.shape[1]  # input space dimension
+    d = mu_z.shape[1]  # latent space dimension
+    
+    # Reconstruction Loss: Negative log likelihood of observing x given z
+    reconstruction_loss = 0.5 * (D * log_var_x + ((x - mu_x) ** 2) / log_var_x.exp()).sum(dim=1).mean()
+    # KL Divergence: Difference between the approximate posterior and the prior
+    kl_divergence = -0.5 * torch.sum(1 + log_var_z - mu_z.pow(2) - log_var_z.exp(), dim=1).mean()
+
+    # Total VAE loss is the sum of the reconstruction loss and the KL divergence
+    # Note that we do not put a minus sign in front of reconstruction_loss
+    total_loss = reconstruction_loss + kl_divergence
+    
+    return total_loss, reconstruction_loss, kl_divergence
+
