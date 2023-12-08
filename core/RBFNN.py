@@ -39,7 +39,7 @@ class RBFNN(nn.Module):
             c_k = self.centers_rbf[k, :].reshape(-1, 1)
             S = (np.diag((points - c_k.T).T @ (points - c_k.T))/points.shape[0]).min()
             lambdas_k[k, 0] = np.sqrt(S)
-        lambdas_k = 1.25 * lambdas_k  # Increase the Sigma by a global factor to smooth the metric a bit, a=1.25
+        lambdas_k = self.a * lambdas_k  # Increase the Sigma by a global factor to smooth the metric a bit, a=1.25
         lambdas_k = 0.5 / (lambdas_k ** 2)
         lambdas_k = torch.from_numpy(lambdas_k.astype(np.float32))
         self.lambdas_k = lambdas_k

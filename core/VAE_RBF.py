@@ -16,8 +16,8 @@ class VAE_RBF(nn.Module):
         return MU_X_eval, LOG_VAR_X_RBF, Z_ENC_eval, MU_Z_eval, LOG_VAR_Z_eval
     
     def forward_RBF(self, z):
-        LOG_VAR_X_RBF = self.RBF(z)
-        return LOG_VAR_X_RBF
+        beta = self.RBF(z)
+        return beta
     
     def forward_VAE(self, x):
         return self.VAE(x)

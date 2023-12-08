@@ -14,7 +14,10 @@ class Riemannian_metric:
         return np.sqrt(np.abs(np.linalg.det(M_z))).reshape(-1,1)
 
     def compute_riemannian_metric(self,z, var_rbfn):
-        N, d = z.size()
+        N, d = z.shape
+        # if z not tensor convert it to tensor
+        if not torch.is_tensor(z):
+            z = torch.Tensor(z)
         z.requires_grad_(True)  # Enable gradient computation for z
 
         # Will contain the Riemannian metric tensor at each point of the latent space
@@ -87,7 +90,7 @@ class Riemannian_metric:
         for n in range(N):
             img_plot[n] = np.sqrt(np.abs(np.linalg.det(np.squeeze(M_z[n, :, :]))))
         img_plot = img_plot.reshape(X1.shape)
-
+        
         if isLog:
             # to better vizualize small differences in the determinant
             img_plot = np.log(img_plot + 1e-10)
@@ -103,4 +106,4 @@ class Riemannian_metric:
         # Labeling the axes
         plt.xlabel('Latent Dimension 1')
         plt.ylabel('Latent Dimension 2')
-        plt.title('Heatmap of Riemannian Metric Tensor Determinant in Latent Space')
+        #plt.title('Heatmap of Riemannian Metric Tensor Determinant in Latent Space')
