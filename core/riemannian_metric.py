@@ -101,9 +101,9 @@ class Riemannian_metric:
         
         # Adding a colorbar
         cbar = plt.colorbar(img_plot)
-        cbar.set_label('Log of sqrt(det(M))' if isLog else 'Sqrt(det(M))')
+        #cbar.set_label('Log of sqrt(det(M))' if isLog else 'Sqrt(det(M))')
 
         # Labeling the axes
-        plt.xlabel('Latent Dimension 1')
-        plt.ylabel('Latent Dimension 2')
+        # plt.xlabel('Latent Dimension 1')
+        # plt.ylabel('Latent Dimension 2')
         #plt.title('Heatmap of Riemannian Metric Tensor Determinant in Latent Space')
