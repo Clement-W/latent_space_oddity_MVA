@@ -1,4 +1,9 @@
 # Latent Space Oddity : On the Curvature of Deep Generative Models
+
+<p align="center">
+    <img src="model_figures/teaser.png" alt="teaser" >
+</p>
+
 ### Project for the course [Geometric Data Analysis](https://www.jeanfeydy.com/Teaching/index.html) at Master MVA
 
 This project provides an in-depth analysis of the paper "Latent Space Oddity: On the Curvature of Deep Generative Models". 
