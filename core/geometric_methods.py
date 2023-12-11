@@ -1,3 +1,5 @@
+# comes from https://github.com/georgiosarvanitidis/geometric_ml
+# Used to reproduce the LAND experiment
 import numpy as np
 from core import geodesics
 import matplotlib.pyplot as plt
